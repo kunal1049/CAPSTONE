@@ -22,7 +22,9 @@ I am a students from St. Clair College currently persuing Data Anlytics for Busi
 - Webpage displays two bar charts and the predictions of the video and audio predictions made by the API.
 
 ## How to run the project
+- Before running the Model API.py change the path for load_model function to the path where you have save the pretrained models(We can't upload our trained model for audio and video as it is exceeding the allocated space, so in that case you can create you own model and use it in the API or you can contact any of our team member are they will share with you the trained model by using some other platform).
 - Running the Model_API.py will load all the models and run all the functions.
 - After successfully running the Model_API.py file, index.html will be loaded on the localhost.
 - Once we open the localhost link, we will be asked to upload the video, once we upload the video, the video will be send to the API for predicting its output.
 - Once the API has predicted the video input and the audio input the data will be passed to the HTML page and the results willbe displayed in the form of Bar charts and image slider.
+

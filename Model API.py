@@ -13,10 +13,10 @@ from pydub import AudioSegment
 from pydub.utils import make_chunks 
 import librosa
 
-new_model = tf.keras.models.load_model('C:/Users/kunal/Desktop/CAPSTONE_PROJECT/Demo/model_no_val_94.05.h5')
-audio_model = tf.keras.models.load_model('C:/Users/kunal/Desktop/CAPSTONE_PROJECT/Demo/audio_model_98_85.h5')
+new_model = tf.keras.models.load_model('C:/Users/kunal/Desktop/CAPSTONE_PROJECT/Demo/video_model.h5')
+audio_model = tf.keras.models.load_model('C:/Users/kunal/Desktop/CAPSTONE_PROJECT/Demo/audio_model.h5')
 
-def prepare_image(img_path):
+def prepare_video(video_path):
     pred_array = []
     Output = {'Angry': 0, 'Disgust' : 0, 'Fear' : 0,'Happy' : 0,'Neutral' : 0, 'Sad' : 0, 'Surprise' : 0}
     neu = 0
@@ -28,7 +28,7 @@ def prepare_image(img_path):
     sur = 0
     count = 0 
     pred = 0  
-    vidcap = cv2.VideoCapture(img_path)
+    vidcap = cv2.VideoCapture(video_path)
     total_frame = int(vidcap.get(cv2.CAP_PROP_FRAME_COUNT))
     seconds = 3
     fps = vidcap.get(cv2.CAP_PROP_FPS)
@@ -121,7 +121,7 @@ def prepare_image(img_path):
     print('Output Video: ',Output)
     return (pred,Output,pred_array,count)
 
-def prepare_audio(img_path,output_ext="wav"):
+def prepare_audio(video_path,output_ext="wav"):
     pred_audio = []
     paths = []
     audio_text = []
@@ -134,8 +134,8 @@ def prepare_audio(img_path,output_ext="wav"):
     ang = 0
     sur = 0
     q = "C:/Users/kunal/Desktop/CAPSTONE_PROJECT/Demo/static/chunks/"
-    filename, ext = os.path.splitext(img_path)
-    clip = VideoFileClip(img_path)
+    filename, ext = os.path.splitext(video_path)
+    clip = VideoFileClip(video_path)
     clip.audio.write_audiofile(f"{filename}.{output_ext}")
     r = sr.Recognizer()
    
@@ -155,9 +155,8 @@ def prepare_audio(img_path,output_ext="wav"):
                 text = f"{text.capitalize()} "
                 audio_text.append(text)
             except:
-                print("Error")
+                print("Preparing")
                 
-    p = 'C:/Users/kunal/Desktop/Audio Dataset/Audio Sample'
     for dirname, _, filenames in os.walk(q):
         for filename in filenames:
             paths.append(os.path.join(dirname, filename))
@@ -225,21 +224,21 @@ def main():
 def get_output():
     img = request.files['my_image']
 
-    img_path = "C:/Users/kunal/Desktop/CAPSTONE_PROJECT/Demo/static/" + img.filename	
-    img.save(img_path)
+    video_path = "C:/Users/kunal/Desktop/CAPSTONE_PROJECT/Demo/static/" + img.filename	
+    img.save(video_path)
 
-    p,Output,pred_arr,count = prepare_image(img_path)
+    p,Output,pred_arr,count = prepare_video(video_path)
     x1 = list(Output.keys())
     y1 = list(Output.values())
 
-    pred_audio,Output_audio,audio_text,pred_audio = prepare_audio(img_path)
+    pred_audio,Output_audio,audio_text,pred_audio = prepare_audio(video_path)
     x2 = list(Output_audio.keys())
     y2 = list(Output_audio.values())
 
     return render_template("index.html", 
                             prediction = p, 
                             labels1 = x1, values1 = y1, 
-                            max=count+5, path= img_path, 
+                            max=count+5, path= video_path, 
                             pred_array=pred_arr,
                             count=count-1,
                             pred_audio=pred_audio, 
